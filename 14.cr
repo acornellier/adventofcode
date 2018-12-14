@@ -1,8 +1,8 @@
 input = "635041".chars.to_a.map(&.to_i)
 
-e = 4
-f = 3
-recipes = "371010".chars.to_a.map(&.to_i)
+e = 0
+f = 1
+recipes = [3, 7]
 
 until recipes.last(input.size) == input
   a, b = recipes[e].to_i, recipes[f].to_i
