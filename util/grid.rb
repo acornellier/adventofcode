@@ -2,6 +2,7 @@ DOWN = 0
 LEFT = 1
 UP = 2
 RIGHT = 3
+REVERSE = ->(dir) { (dir + 2) % 4 }
 
 class Grid
   attr_accessor :g, :y, :x, :dir
@@ -71,7 +72,7 @@ class Grid
     @g.each.with_index do |r, i|
       s = r.dup
       s[x] = '@' if i == y
-      puts s
+      puts s.is_a?(Array) ? s.join : s
     end
     puts
   end
