@@ -103,8 +103,6 @@ loop do
       end
     end
   end
-  (HGen@floor0, HChip@floor1, LGen@floor2, LChip@floor2)
-  (LGen@floor0, LChip@floor1, HGen@floor2, HChip@floor2)
 
   cur_dist = shortest_distance + 1
   neighbors.each do |neighbor|

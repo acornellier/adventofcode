@@ -1,3 +1,5 @@
+require 'set'
+
 DOWN = 0
 LEFT = 1
 UP = 2
@@ -24,6 +26,11 @@ class Grid
 
   def cur=(val)
     @g[y][x] = val
+  end
+  
+  def teleport(y, x)
+    @y = y
+    @x = x
   end
 
   def move(dir = @dir)
@@ -75,5 +82,31 @@ class Grid
       puts s.is_a?(Array) ? s.join : s
     end
     puts
+  end
+end
+
+def dijkstra(initial_state, exit_condition, distance, neighbors)
+  states = Hash.new(Float::INFINITY)
+  states[initial_state] = distance.call(initial_state)
+  visited = Set.new
+
+  loop do
+    raise 'no possible moves' if states.empty?
+
+    shortest_distance = states.values.min
+    cur = states.key(shortest_distance)
+    states.delete(cur)
+    visited.add(cur)
+
+    if exit_condition.call(cur)
+      cur.draw
+      puts visited.size, shortest_distance
+      return
+    end
+
+    neighbors.call(cur).each do |neighbor|
+      next if visited.include?(neighbor)
+      states[neighbor] = [states[neighbor] || Float::INFINITY, distance.call(neighbor)].min
+    end
   end
 end
