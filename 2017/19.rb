@@ -1,7 +1,7 @@
-require_relative 'util/grid'
+require_relative 'util'
 lines = $stdin.read.chomp.split("\n")
 
-grid = Grid.new(lines, 0, lines[0].index('|'), DOWN)
+grid = Util.new(lines, 0, lines[0].index('|'), DOWN)
 
 path = []
 steps = 0

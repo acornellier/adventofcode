@@ -1,4 +1,4 @@
-require_relative 'util/grid'
+require_relative 'util'
 lines = $stdin.read.strip.split("\n")
 
 diagnostic = lines[1].match(/\d+/)[0].to_i

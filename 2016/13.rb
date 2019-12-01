@@ -1,11 +1,11 @@
-require_relative 'util/grid'
+require_relative 'util'
 lines = $stdin.read.chomp.split("\n")
 
 OPEN = '.'
 WALL = '#'
 
 SIZE = 50
-g = Grid.new(Array.new(SIZE) { ' ' * SIZE }, 1, 1, nil)
+g = Util.new(Array.new(SIZE) { ' ' * SIZE }, 1, 1, nil)
 
 (0...SIZE).each do |y|
   (0...SIZE).each do |x|

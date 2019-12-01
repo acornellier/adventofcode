@@ -1,4 +1,4 @@
-require_relative 'util/grid'
+require_relative 'util'
 lines = $stdin.read.strip.split("\n")
 
 OFF = ' '
@@ -6,7 +6,7 @@ ON = '█'
 
 g = Array.new(6) { Array.new(50, OFF) }
 # g = Array.new(3) { Array.new(7, OFF) } # ejemplo
-grid = Grid.new(g, nil, nil, nil)
+grid = Util.new(g, nil, nil, nil)
 
 lines.each do |line|
   p line

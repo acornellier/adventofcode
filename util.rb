@@ -6,7 +6,7 @@ UP = 2
 RIGHT = 3
 REVERSE = ->(dir) { (dir + 2) % 4 }
 
-class Grid
+class Util
   attr_accessor :g, :y, :x, :dir
 
   def initialize(grid, y, x, dir)

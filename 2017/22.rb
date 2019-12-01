@@ -1,4 +1,4 @@
-require_relative 'util/grid'
+require_relative 'util'
 lines = $stdin.read.chomp.split("\n")
 
 CLEAN = '.'
@@ -12,7 +12,7 @@ STATE_CHANGE = {
   FLAGGED => CLEAN,
 }
 
-grid = Grid.new(lines, lines.size / 2, lines.size / 2, UP)
+grid = Util.new(lines, lines.size / 2, lines.size / 2, UP)
 bursts_infected = 0
 
 start = Time.now

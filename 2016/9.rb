@@ -1,4 +1,4 @@
-require_relative 'util/grid'
+require_relative 'util'
 lines = $stdin.read.strip.split("\n")
 
 def decompress(data)

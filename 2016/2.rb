@@ -1,4 +1,4 @@
-require_relative 'util/grid'
+require_relative 'util'
 lines = $stdin.read.strip.split("\n")
 
 keypad = [
@@ -9,7 +9,7 @@ keypad = [
   [nil, nil, ?D, nil, nil],
 ]
 
-g = Grid.new(keypad, 2, 0, UP)
+g = Util.new(keypad, 2, 0, UP)
 
 MAPPING = { ?U => UP, ?L => LEFT, ?R => RIGHT, ?D => DOWN }
 
