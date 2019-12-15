@@ -37,6 +37,10 @@ class Grid
     @g[y][x] = val
   end
   
+  def coords
+    [@y, @x]
+  end
+  
   def teleport(y, x)
     @y = y
     @x = x
@@ -54,44 +58,57 @@ class Grid
       @x -= 1
     end
   end
+  
+  def temp_move(dir = @dir)
+    move(dir)
+    yield.tap do
+      reverse(dir)
+    end
+  end
 
   def reverse(dir = @dir)
     move(REVERSE[dir])
   end
 
   def turn_left
-    @dir = (dir - 1) % 4
+    @dir = (@dir - 1) % 4
   end
 
   def turn_right
-    @dir = (dir + 1) % 4
+    @dir = (@dir + 1) % 4
   end
 
   def turn_around
-    @dir = (dir + 2) % 4
+    @dir = (@dir + 2) % 4
   end
 
   def neighbor(dir = @dir)
     case dir
     when UP
-      @g[y - 1][x]
+      @g[@y - 1][@x]
     when RIGHT
-      @g[y][x + 1]
+      @g[@y][@x + 1]
     when DOWN
-      @g[y + 1][x]
+      @g[@y + 1][@x]
     when LEFT
-      @g[y][x - 1]
+      @g[@y][@x - 1]
     end
+  end
+
+  def map_neighbors
+    DIRECTIONS.map do |dir|
+      temp_move(dir) { yield }
+    end.compact
   end
   
   def out_of_bounds?
-    y < 0 || y >= @g.size || x < 0 || x >= @g[0].size
+    @y < 0 || @y >= @g.size || @x < 0 || @x >= @g[0].size
   end
 
   def draw
     @g.each.with_index do |r, i|
       s = r.dup
-      s[x] = '@' if i == y
+      s[@x] = '@' if i == @y
       puts s.is_a?(Array) ? s.join : s
     end
     puts

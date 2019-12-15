@@ -88,28 +88,22 @@ grid = [
 "__________________________________________________",
 "__________________________________________________",
 "__________________________________________________",
-]
+].map(&:chars)
 
 g = Grid.new(grid, SIZE / 2, SIZE / 2, nil)
 
-exit_condition = ->(state) do
-  g[state[0]][state[1]] == OXYGEN
+exit_condition = ->((y, x)) do
+  g[y][x] == OXYGEN
 end
 
-neighbors = ->(state) do
-  g.y = state[0]
-  g.x = state[1]
-  DIRECTIONS.select do |dir|
-    g.neighbor(dir) != WALL
-  end.map do |dir|
-    g.move(dir)
-    [g.y, g.x].tap do
-      g.reverse(dir)
-    end
+neighbors = ->((y, x)) do
+  g.teleport(y, x)
+  g.map_neighbors do
+    g.coords if g.cur != WALL
   end
 end
 
-dijkstra([g.y, g.x], exit_condition, neighbors)
+dijkstra(g.coords, exit_condition, neighbors)
 
 minutes = 0
 loop do
@@ -117,18 +111,15 @@ loop do
 
   oxygen_cells = []
   grid.each.with_index do |r, y|
-    r.chars.each.with_index do |c, x|
+    r.each.with_index do |c, x|
       oxygen_cells << [y, x] if c == OXYGEN
     end
   end
 
   oxygen_cells.each do |y, x|
-    g.y = y
-    g.x = x
-    DIRECTIONS.each do |dir|
-      g.move(dir)
+    g.teleport(y, x)
+    g.map_neighbors do
       g.cur = OXYGEN if g.cur == GOOD
-      g.reverse(dir)
     end
   end
   
