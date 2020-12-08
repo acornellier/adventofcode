@@ -36,11 +36,11 @@ class Grid
   def cur=(val)
     @g[y][x] = val
   end
-  
+
   def coords
     [@y, @x]
   end
-  
+
   def teleport(y, x)
     @y = y
     @x = x
@@ -58,7 +58,7 @@ class Grid
       @x -= 1
     end
   end
-  
+
   def temp_move(dir = @dir)
     move(dir)
     yield.tap do
@@ -100,7 +100,7 @@ class Grid
       temp_move(dir) { yield }
     end.compact
   end
-  
+
   def out_of_bounds?
     @y < 0 || @y >= @g.size || @x < 0 || @x >= @g[0].size
   end
