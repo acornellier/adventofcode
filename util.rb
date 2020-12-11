@@ -1,7 +1,7 @@
 require 'set'
 
 def lines
-  @lines ||= $<.read.split("\n")
+  @lines ||= File.read(ARGV[0]).split("\n")
 end
 
 def first_line
@@ -12,17 +12,28 @@ UP = 0
 RIGHT = 1
 DOWN = 2
 LEFT = 3
-REVERSE = ->(dir) { (dir + 2) % 4 }
+
+UP_RIGHT = 4
+UP_LEFT = 5
+DOWN_LEFT = 6
+DOWN_RIGHT = 7
+
+REVERSE = ->(dir) { (dir + 2) % 4 + (dir >= 4 ? 4 : 0) }
 DIRECTIONS = [UP, RIGHT, DOWN, LEFT]
+ALL_DIRECTIONS = DIRECTIONS + [UP_RIGHT, UP_LEFT, DOWN_LEFT, DOWN_RIGHT]
 
 class Grid
   attr_accessor :g, :y, :x, :dir
 
-  def initialize(grid, y = nil, x = nil, dir = nil)
+  def initialize(grid = lines, y = nil, x = nil, dir = nil)
     @g = grid
     @y = y
     @x = x
     @dir = dir
+  end
+
+  def dup
+    Grid.new(@g.map(&:dup), @y, @x, @dir)
   end
 
   def [](y)
@@ -44,19 +55,6 @@ class Grid
   def teleport(y, x)
     @y = y
     @x = x
-  end
-
-  def move(dir = @dir)
-    case dir
-    when UP
-      @y -= 1
-    when RIGHT
-      @x += 1
-    when DOWN
-      @y += 1
-    when LEFT
-      @x -= 1
-    end
   end
 
   def temp_move(dir = @dir)
@@ -82,19 +80,6 @@ class Grid
     @dir = (@dir + 2) % 4
   end
 
-  def neighbor(dir = @dir)
-    case dir
-    when UP
-      @g[@y - 1][@x]
-    when RIGHT
-      @g[@y][@x + 1]
-    when DOWN
-      @g[@y + 1][@x]
-    when LEFT
-      @g[@y][@x - 1]
-    end
-  end
-
   def map_neighbors
     DIRECTIONS.map do |dir|
       temp_move(dir) { yield }
@@ -112,6 +97,52 @@ class Grid
       puts s.is_a?(Array) ? s.join : s
     end
     puts
+  end
+
+  def neighbor(dir = @dir)
+    case dir
+    when UP
+      @g[@y - 1][@x]
+    when RIGHT
+      @g[@y][@x + 1]
+    when DOWN
+      @g[@y + 1][@x]
+    when LEFT
+      @g[@y][@x - 1]
+    when UP_RIGHT
+      @g[@y - 1][@x + 1]
+    when UP_LEFT
+      @g[@y - 1][@x - 1]
+    when DOWN_LEFT
+      @g[@y + 1][@x - 1]
+    when DOWN_RIGHT
+      @g[@y + 1][@x + 1]
+    end
+  end
+
+  def move(dir = @dir)
+    case dir
+    when UP
+      @y -= 1
+    when RIGHT
+      @x += 1
+    when DOWN
+      @y += 1
+    when LEFT
+      @x -= 1
+    when UP_RIGHT
+      @y -= 1
+      @x += 1
+    when UP_LEFT
+      @y -= 1
+      @x -= 1
+    when DOWN_LEFT
+      @y += 1
+      @x -= 1
+    when DOWN_RIGHT
+      @y += 1
+      @x += 1
+    end
   end
 end
 
