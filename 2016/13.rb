@@ -5,11 +5,19 @@ OPEN = '.'
 WALL = '#'
 
 SIZE = 50
-g = Util.new(Array.new(SIZE) { ' ' * SIZE }, 1, 1, nil)
+ship = Util.new(Array.new(SIZE) { ' ' * SIZE }, 1, 1, nil)
 
 (0...SIZE).each do |y|
   (0...SIZE).each do |x|
-    g[y][x] = (x*x + 3*x + 2*x*y + y + y*y + lines[0].to_i).to_s(2).count('1').even? ? OPEN : WALL
+    ship[y][x] =
+      if (x * x + 3 * x + 2 * x * y + y + y * y + lines[0].to_i)
+           .to_s(2)
+           .count('1')
+           .even?
+        OPEN
+      else
+        WALL
+      end
   end
 end
 
@@ -19,9 +27,9 @@ end
 
 neighbors = ->(state) do
   [UP, LEFT, RIGHT, DOWN].map do |dir|
-    g.teleport(*state)
-    g.move(dir)
-    g.out_of_bounds? || g.cur == WALL ? nil : [g.y, g.x]
+    ship.teleport(*state)
+    ship.move(dir)
+    ship.out_of_bounds? || ship.cur == WALL ? nil : [ship.y, ship.x]
   end.compact
 end
 

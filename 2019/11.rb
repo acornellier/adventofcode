@@ -1,6 +1,6 @@
 require_relative 'util'
 
-a = lines[0].split(?,).map(&:to_i) + [0] * 1000
+a = lines[0].split(',').map(&:to_i) + [0] * 1000
 ps = 0
 done = false
 relative_base = 0
@@ -8,8 +8,8 @@ relative_base = 0
 BLACK = '.'
 WHITE = '#'
 
-g = Array.new(100) { BLACK * 100 }
-grid = Grid.new(g, 5, 5, UP)
+ship = Array.new(100) { BLACK * 100 }
+grid = Grid.new(ship, 5, 5, UP)
 grid.cur = WHITE
 
 output_step = 0
@@ -18,8 +18,8 @@ painted = Set.new
 
 until done
   opcode = a[ps] % 100
-  modea = (a[ps] % 100000) / 10000
-  modeb = (a[ps] % 10000) / 1000
+  modea = (a[ps] % 100_000) / 10_000
+  modeb = (a[ps] % 10_000) / 1000
   modec = (a[ps] % 1000) / 100
 
   addr1 = modec == 2 ? a[ps + 1] + relative_base : a[ps + 1]

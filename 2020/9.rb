@@ -10,9 +10,7 @@ nums = lines.map(&:to_i)
 nums.each.with_index do |num, i|
   next unless i >= SIZE
 
-  good = nums[(i-SIZE)...i].combination(2).any? do |x, y|
-    (x + y == num)
-  end
+  good = nums[(i - SIZE)...i].combination(2).any? { |x, y| (x + y == num) }
 
   unless good
     puts "#{num} is not good"

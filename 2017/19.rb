@@ -9,6 +9,7 @@ steps = 0
 loop do
   steps += 1
   grid.move
+
   # grid.draw
 
   case grid.cur

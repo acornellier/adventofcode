@@ -13,49 +13,44 @@ erosion = Array.new(target_y + PADDING) { Array.new(target_x + PADDING, nil) }
 gindex = Array.new(target_y + PADDING) { Array.new(target_x + PADDING, nil) }
 
 gindex[target_y][target_x] = 0
-erosion[target_y][target_x] = (0 + depth) % 20183
+erosion[target_y][target_x] = (0 + depth) % 20_183
 
 (0...gindex.first.size).each do |x|
-  gindex[0][x] = 16807 * x
-  erosion[0][x] = (gindex[0][x] + depth) % 20183
+  gindex[0][x] = 16_807 * x
+  erosion[0][x] = (gindex[0][x] + depth) % 20_183
 end
 
 (0...gindex.size).each do |y|
-  gindex[y][0] = 48271 * y
-  erosion[y][0] = (gindex[y][0] + depth) % 20183
-end 
+  gindex[y][0] = 48_271 * y
+  erosion[y][0] = (gindex[y][0] + depth) % 20_183
+end
 
 (1...gindex.size).each do |y|
   (1...gindex.first.size).each do |x|
     next if y == target_y && x == target_x
-    gindex[y][x] = erosion[y][x-1] * erosion[y-1][x]
-    erosion[y][x] = (gindex[y][x] + depth) % 20183
+    gindex[y][x] = erosion[y][x - 1] * erosion[y - 1][x]
+    erosion[y][x] = (gindex[y][x] + depth) % 20_183
   end
 end
 
-res = erosion[0..target_y].sum do |r|
-  r[0..target_x].sum do |c|
-    c % 3
-  end
-end
+floating_address =
+  erosion[0..target_y].sum { |r| r[0..target_x].sum { |c| c % 3 } }
 
-p res
+p floating_address
 
 TORCH = 1
 
-grid = erosion.map do |r|
-  r.map { |c| c % 3 }
-end
+grid = erosion.map { |r| r.map { |c| c % 3 } }
 
 require 'pqueue'
-pq = PQueue.new { |a,b| a[0] < b[0] }
+pq = PQueue.new { |a, b| a[0] < b[0] }
 pq.push([0, 0, 0, TORCH])
 best = {}
-until pq.empty? do
+until pq.empty?
   p pq.size if pq.size % 1000 == 0
   min, y, x, item = pq.pop
 
-  key = [y,x,item]
+  key = [y, x, item]
   next if best[key] && min >= best[key]
   best[key] = min
   if key == [target_y, target_x, TORCH]
@@ -67,7 +62,7 @@ until pq.empty? do
     pq.push([min + 7, y, x, i]) if i != item && i != grid[y][x]
   end
 
-  [[-1,0], [1,0], [0,-1], [0,1]].each do |(dy, dx)|
+  [[-1, 0], [1, 0], [0, -1], [0, 1]].each do |(dy, dx)|
     y2 = y + dy
     x2 = x + dx
     next unless y2 >= 0 && grid[y2] && x2 >= 0 && grid[y2][x2]

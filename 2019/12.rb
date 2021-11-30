@@ -1,8 +1,6 @@
 require_relative 'util'
 
-og = lines.map do |line|
-  line.scan(/-?\d+/).map(&:to_i) + [0, 0, 0]
-end
+og = lines.map { |line| line.scan(/-?\d+/).map(&:to_i) + [0, 0, 0] }
 
 best = []
 (0..2).each do |m|
@@ -10,21 +8,27 @@ best = []
   visited = Set.new
 
   (0..).each do |n|
-    moons.combination(2).each do |a, b|
-      if a[0] > b[0]
-        a[1] -= 1
-        b[1] += 1
-      elsif a[0] < b[0]
-        a[1] += 1
-        b[1] -= 1
+    moons
+      .combination(2)
+      .each do |a, b|
+        if a[0] > b[0]
+          a[1] -= 1
+          b[1] += 1
+        elsif a[0] < b[0]
+          a[1] += 1
+          b[1] -= 1
+        end
       end
-    end
 
-    moons.each do |moon|
-      moon[0] += moon[1]
-    end
+    moons.each { |moon| moon[0] += moon[1] }
 
-    (p [n, moons]; best << n; break) if visited.include?(moons)
+    if visited.include?(moons)
+      (
+        p [n, moons]
+        best << n
+        break
+      )
+    end
     visited << moons
   end
 end

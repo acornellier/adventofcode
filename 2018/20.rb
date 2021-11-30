@@ -9,18 +9,19 @@ end
 
 lines = $<.readlines.map(&:strip)
 
-UNKN = ??
-ROOM = ?.
-WALL = ?#
-VERT = ?|
-HORZ = ?–
-ME = ?X
+UNKN = '?'
+ROOM = '.'
+WALL = '#'
+VERT = '|'
+HORZ = '–'
+ME = 'X'
 
-NEW_DOOR = "#?#"
-NEW_ROOM = "?.?"
+NEW_DOOR = '#?#'
+NEW_ROOM = '?.?'
 
 def print(map)
-  puts; map.each { |l| puts l unless l == ' ' * l.size }
+  puts
+  map.each { |l| puts l unless l == ' ' * l.size }
 end
 
 def chunks(regex)
@@ -28,17 +29,13 @@ def chunks(regex)
   depth = 0
   regex.chars.each do |c|
     case c
-    when ?(
+    when '('
       depth += 1
-    when ?)
+    when ')'
       depth -= 1
     end
 
-    if c == ?| && depth == 0
-      l << ''
-    else
-      l.last << c
-    end
+    c == '|' && depth == 0 ? l << '' : l.last << c
   end
   l
 end
@@ -47,9 +44,9 @@ def close_index(regex)
   depth = 0
   regex.chars.each.with_index do |c, i|
     case c
-    when ?(
+    when '('
       depth += 1
-    when ?)
+    when ')'
       depth -= 1
       return i if depth == 0
     end
@@ -62,29 +59,30 @@ def parse_chunk(regex, yc, xc, map)
   i = 0
   until i >= regex.size
     map[yc][xc] = ME
+
     # print(map)
     map[yc][xc] = ROOM
 
     case regex[i]
-    when ?(
+    when '('
       close = i + close_index(regex[i..-1])
       parse_regex(regex[i + 1..close - 1], yc, xc, map)
       i = close
-    when ?N
+    when 'N'
       map[yc - 1][xc] = HORZ
       if map[yc - 2][xc] == ' '
         map[yc - 2].rep(NEW_ROOM, xc - 1)
         map[yc - 3].rep(NEW_DOOR, xc - 1)
       end
       yc -= 2
-    when ?S
+    when 'S'
       map[yc + 1][xc] = HORZ
       if map[yc + 2][xc] == ' '
         map[yc + 2].rep(NEW_ROOM, xc - 1)
         map[yc + 3].rep(NEW_DOOR, xc - 1)
       end
       yc += 2
-    when ?E
+    when 'E'
       map[yc][xc + 1] = VERT
       if map[yc][xc + 2] == ' '
         map[yc - 1][xc + 2] = UNKN
@@ -95,7 +93,7 @@ def parse_chunk(regex, yc, xc, map)
         map[yc + 1][xc + 3] = WALL
       end
       xc += 2
-    when ?W
+    when 'W'
       map[yc][xc - 1] = VERT
       if map[yc][xc - 2] == ' '
         map[yc - 1][xc - 2] = UNKN
@@ -113,9 +111,7 @@ def parse_chunk(regex, yc, xc, map)
 end
 
 def parse_regex(regex, yc, xc, map)
-  chunks(regex).each do |chunk|
-    parse_chunk(chunk, yc, xc, map)
-  end
+  chunks(regex).each { |chunk| parse_chunk(chunk, yc, xc, map) }
 end
 
 def adjacent_rooms(map, start_y, start_x)
@@ -136,9 +132,7 @@ def most_doors(map, start_y, start_x)
     reached << [y, x]
     rooms = adjacent_rooms(map, y, x) - reached
     num += 1 if steps >= 1000
-    rooms.each do |room|
-      stack << [*room, steps + 1]
-    end
+    rooms.each { |room| stack << [*room, steps + 1] }
   end
   num
 end

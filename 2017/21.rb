@@ -7,9 +7,7 @@ end
 def rotate1(t)
   u = newa(t.size)
   (0...t.size).each do |y|
-    (0...t.size).each do |x|
-      u[y][x] = t[t.size - x - 1][y]
-    end
+    (0...t.size).each { |x| u[y][x] = t[t.size - x - 1][y] }
   end
   u
 end
@@ -17,9 +15,7 @@ end
 def rotate2(t)
   u = newa(t.size)
   (0...t.size).each do |y|
-    (0...t.size).each do |x|
-      u[y][x] = t[t.size - y - 1][t.size - x - 1]
-    end
+    (0...t.size).each { |x| u[y][x] = t[t.size - y - 1][t.size - x - 1] }
   end
   u
 end
@@ -27,27 +23,21 @@ end
 def rotate3(t)
   u = newa(t.size)
   (0...t.size).each do |y|
-    (0...t.size).each do |x|
-      u[y][x] = t[x][t.size - y - 1]
-    end
+    (0...t.size).each { |x| u[y][x] = t[x][t.size - y - 1] }
   end
   u
 end
 
 def flipx(t)
   u = newa(t.size)
-  (0...t.size).each do |y|
-    u[y] = t[t.size - y - 1]
-  end
+  (0...t.size).each { |y| u[y] = t[t.size - y - 1] }
   u
 end
 
 def flipy(t)
   u = newa(t.size)
   (0...t.size).each do |y|
-    (0...t.size).each do |x|
-      u[y][x] = t[y][t.size - x - 1]
-    end
+    (0...t.size).each { |x| u[y][x] = t[y][t.size - x - 1] }
   end
   u
 end
@@ -63,16 +53,10 @@ end
 rules = {}
 lines.each do |line|
   a, b = line.match(/(.*) => (.*)/)[1..]
-  permutations(a.split('/')).each do |p|
-    rules[p] = b.split('/')
-  end
+  permutations(a.split('/')).each { |p| rules[p] = b.split('/') }
 end
 
-grid = [
- '.#.',
- '..#',
- '###',
-]
+grid = %w[.#. ..# ###]
 
 times = 0
 loop do
@@ -80,7 +64,8 @@ loop do
   new_grid = []
   (0...(grid.size / n)).each do |y|
     (0...(grid.size / n)).each do |x|
-      subset = grid[(n * y)..(n * y + n - 1)].map { |r| r[(n * x)..(n * x + n - 1)] }
+      subset =
+        grid[(n * y)..(n * y + n - 1)].map { |r| r[(n * x)..(n * x + n - 1)] }
       match = rules[subset]
       match.each.with_index do |r, i|
         if x == 0

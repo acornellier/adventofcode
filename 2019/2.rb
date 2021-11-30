@@ -10,14 +10,14 @@ lines = $<.read.split("\n")
     idx = 0
     loop do
       e = true
-      a, b, c, d = codes[idx..idx+3]
+      a, b, c, d = codes[idx..idx + 3]
       case a
       when 1
         codes[d] = codes[b] + codes[c]
       when 2
         codes[d] = codes[b] * codes[c]
       when 99
-        if codes[0] == 19690720
+        if codes[0] == 19_690_720
           p codes
           p x, y
           p 100 * x + y
@@ -32,6 +32,3 @@ lines = $<.read.split("\n")
     end
   end
 end
-
-
-

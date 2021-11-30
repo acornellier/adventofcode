@@ -1,8 +1,6 @@
 lines = $stdin.read.strip.split("\n")
 
-ops = lines.map do |line|
-  line.match(/(\w+) (\w+) ?(-?.+)?/)[1..]
-end
+ops = lines.map { |line| line.match(/(\w+) (\w+) ?(-?.+)?/)[1..] }
 
 qs = [[], []]
 regs = [Hash.new(0), Hash.new(0)]

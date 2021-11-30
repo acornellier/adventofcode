@@ -16,13 +16,14 @@ class Point
   end
 
   def dist
-    @p.sum { |n| n ** 2 }
+    @p.sum { |n| n**2 }
   end
 end
 
 points = []
 lines.each do |line|
-  points << Point.new(*line.scan(/(-?\d+),(-?\d+),(-?\d+)/).map { |l| l.map(&:to_i) })
+  points <<
+    Point.new(*line.scan(/(-?\d+),(-?\d+),(-?\d+)/).map { |l| l.map(&:to_i) })
 end
 
 # distances = Array.new(points.size, 0)
@@ -40,9 +41,7 @@ end
     end
   end
 
-  indexes_to_delete.uniq.sort.reverse.each do |idx|
-    points.delete_at(idx)
-  end
+  indexes_to_delete.uniq.sort.reverse.each { |idx| points.delete_at(idx) }
 end
 
 # p distances.map { |d| d / 100000 }

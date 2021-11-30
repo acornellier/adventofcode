@@ -35,15 +35,15 @@ start = Time.now
   grid.move
 
   if grid.y < 0
-    grid.g.prepend('.' * grid[0].size)
+    shiprid.g.prepend('.' * grid[0].size)
     grid.y = 0
-  elsif grid.y == grid.g.size
-    grid.g.push('.' * grid[0].size)
+  elsif grid.y == shiprid.g.size
+    shiprid.g.push('.' * grid[0].size)
   elsif grid.x < 0
-    grid.g.each { |r| r.prepend('.') }
+    shiprid.g.each { |r| r.prepend('.') }
     grid.x = 0
   elsif grid.x == grid[0].size
-    grid.g.each { |r| r << '.' }
+    shiprid.g.each { |r| r << '.' }
   end
 end
 

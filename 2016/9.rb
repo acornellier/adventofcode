@@ -7,10 +7,10 @@ def decompress(data)
   until i >= data.size
     c = data[i]
     case c
-    when ?(
-      s, x, y = data[i+1..].match(/(\d+)x(\d+)/).to_a
+    when '('
+      s, x, y = data[i + 1..].match(/(\d+)x(\d+)/).to_a
       i += s.size + 2
-      size += decompress(data[i...i+x.to_i]) * y.to_i
+      size += decompress(data[i...i + x.to_i]) * y.to_i
       i += x.to_i
     else
       size += 1

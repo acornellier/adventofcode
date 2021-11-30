@@ -1,18 +1,12 @@
 lines = File.readlines('input.txt').map(&:strip)
 
-steps = lines.map do |line|
-  [line[5], line[36]]
-end
+steps = lines.map { |line| [line[5], line[36]] }
 
 letters = steps.flatten.uniq
 
-h1 = letters.each_with_object({}) do |letter, h|
-  h[letter] = []
-end
+h1 = letters.each_with_object({}) { |letter, h| h[letter] = [] }
 
-steps.each do |step|
-  h1[step[1]] << step[0]
-end
+steps.each { |step| h1[step[1]] << step[0] }
 
 pending = {}
 completed = []

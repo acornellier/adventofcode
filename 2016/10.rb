@@ -10,7 +10,7 @@ starts.each do |line|
   words = line.split
   bots[words.last.to_i] << words[1].to_i
 end
-  
+
 instr.cycle do |line|
   words = line.split
 
@@ -19,7 +19,8 @@ instr.cycle do |line|
   next unless vals.size == 2
 
   vals.sort!
-  # (p bot; exit) if vals == [17, 61] 
+
+  # (p bot; exit) if vals == [17, 61]
 
   [5, 10].each do |i|
     (words[i] == 'output' ? output : bots)[words[i + 1].to_i] << vals.shift

@@ -42,19 +42,21 @@ end
 
 og_items = []
 
-lines.each.with_index(1) do |line, floor|
-  line.scan(/(\w+)-compatible microchip/).flatten.each do |ele|
-    og_items << Item.new(ele, MICROCHIP, floor)
+lines
+  .each
+  .with_index(1) do |line, floor|
+    line
+      .scan(/(\w+)-compatible microchip/)
+      .flatten
+      .each { |ele| og_items << Item.new(ele, MICROCHIP, floor) }
+    line
+      .scan(/(\w+) generator/)
+      .flatten
+      .each { |ele| og_items << Item.new(ele, GENERATOR, floor) }
   end
-  line.scan(/(\w+) generator/).flatten.each do |ele|
-    og_items << Item.new(ele, GENERATOR, floor)
-  end
-end
 
-['elerium', 'dilithium'].each do |ele|
-  [GENERATOR, MICROCHIP].each do |type|
-    og_items << Item.new(ele, type, 1)
-  end
+%w[elerium dilithium].each do |ele|
+  [GENERATOR, MICROCHIP].each { |type| og_items << Item.new(ele, type, 1) }
 end
 
 states = Hash.new(Float::INFINITY)
@@ -78,7 +80,9 @@ loop do
   p [states.size, visited.size, shortest_distance] if states.size % 1000 == 0
 
   below_floors = (1...elevator).to_a
-  below_empty = below_floors.empty? || items.none? { |item| below_floors.include?(item.floor) }
+  below_empty =
+    below_floors.empty? ||
+      items.none? { |item| below_floors.include?(item.floor) }
   possible_dists = (below_empty ? [+1] : elevator == 4 ? [-1] : [-1, +1])
 
   available = items.select { |item| item.floor == elevator }
@@ -87,26 +91,44 @@ loop do
 
   skip_1_up = false
   skip_2_down = false
-  neighbors = possible_dists.each_with_object([]) do |dist, array|
-    possible_takes = dist == +1 ? (comb2 + comb1) : (comb1 + comb2)
-    possible_takes.each do |take|
-      next if skip_1_up && dist == +1 && take.size == 1 || skip_2_down && dist == -1 && take.size == 2
+  neighbors =
+    possible_dists.each_with_object([]) do |dist, array|
+      possible_takes = dist == +1 ? (comb2 + comb1) : (comb1 + comb2)
+      possible_takes.each do |take|
+        if skip_1_up && dist == +1 && take.size == 1 ||
+             skip_2_down && dist == -1 && take.size == 2
+          next
+        end
 
-      new_elevator = elevator + dist
-      new_items = items.map(&:dup).each { |item| item.floor += dist if take.any? { |item2| item.same?(item2) } }
+        new_elevator = elevator + dist
+        new_items =
+          items
+            .map(&:dup)
+            .each do |item|
+              item.floor += dist if take.any? { |item2| item.same?(item2) }
+            end
 
-      chips, gens = new_items.select { |item| item.floor == new_elevator }.partition { |item| item.type == MICROCHIP }
-      if !chips.any? { |chip| gens.any? { |gen| gen.ele != chip.ele } && gens.none? { |gen| gen.ele == chip.ele } }
-        array << [new_elevator, new_items]
-        skip_1_up = true if dist == +1 && take.size == 2
-        skip_2_down = true if dist == -1 && take.size == 1
+        chips, gens =
+          new_items
+            .select { |item| item.floor == new_elevator }
+            .partition { |item| item.type == MICROCHIP }
+        if !chips.any? do |chip|
+             gens.any? { |gen| gen.ele != chip.ele } &&
+               gens.none? { |gen| gen.ele == chip.ele }
+           end
+          array << [new_elevator, new_items]
+          skip_1_up = true if dist == +1 && take.size == 2
+          skip_2_down = true if dist == -1 && take.size == 1
+        end
       end
     end
-  end
 
   cur_dist = shortest_distance + 1
   neighbors.each do |neighbor|
-    states[neighbor] = [states[neighbor] || Float::INFINITY, cur_dist].min unless visited.include?(neighbor)
+    states[neighbor] = [
+      states[neighbor] || Float::INFINITY,
+      cur_dist
+    ].min unless visited.include?(neighbor)
   end
   visited.add(cur)
   states.delete(cur)

@@ -1,15 +1,16 @@
 require_relative 'util'
 lines = $<.read.split("\n")
 
-og = lines[0].split(?,).map(&:to_i)
+og = lines[0].split(',').map(&:to_i)
 max = 0
 
 (5..9).to_a.permutation do |phases|
   p phases
-  softwares = 5.times.map do
-    # code   ps halted read  output
-    [og.dup, 0, false, true, nil]
-  end
+  softwares =
+    5.times.map do
+      # code   ps halted read  output
+      [og.dup, 0, false, true, nil]
+    end
 
   phases.cycle.with_index do |phase, idx|
     break if softwares.all? { |s| s[2] }
@@ -25,14 +26,18 @@ max = 0
 
     until software[2] || done
       #modea=a[ps]/10000
-      modeb = (a[ps] % 10000) / 1000
+      modeb = (a[ps] % 10_000) / 1000
       modec = (a[ps] % 1000) / 100
       case a[ps] % 100
       when 1
-        a[a[ps + 3]] = (modec == 1 ? a[ps + 1] : a[a[ps + 1]]) + (modeb == 1 ? a[ps + 2] : a[a[ps + 2]])
+        a[a[ps + 3]] =
+          (modec == 1 ? a[ps + 1] : a[a[ps + 1]]) +
+            (modeb == 1 ? a[ps + 2] : a[a[ps + 2]])
         ps += 4
       when 2
-        a[a[ps + 3]] = (modec == 1 ? a[ps + 1] : a[a[ps + 1]]) * (modeb == 1 ? a[ps + 2] : a[a[ps + 2]])
+        a[a[ps + 3]] =
+          (modec == 1 ? a[ps + 1] : a[a[ps + 1]]) *
+            (modeb == 1 ? a[ps + 2] : a[a[ps + 2]])
         ps += 4
       when 3
         a[a[ps + 1]] = software[3] ? phase : last_output
@@ -44,14 +49,34 @@ max = 0
         ps += 2
         done = true
       when 5
-        ((modec == 1 ? a[ps + 1] : a[a[ps + 1]]) != 0) ? (ps = (modeb == 1 ? a[ps + 2] : a[a[ps + 2]])) : ps += 3
+        if ((modec == 1 ? a[ps + 1] : a[a[ps + 1]]) != 0)
+          (ps = (modeb == 1 ? a[ps + 2] : a[a[ps + 2]]))
+        else
+          ps += 3
+        end
       when 6
-        ((modec == 1 ? a[ps + 1] : a[a[ps + 1]]) == 0) ? (ps = (modeb == 1 ? a[ps + 2] : a[a[ps + 2]])) : ps += 3
+        if ((modec == 1 ? a[ps + 1] : a[a[ps + 1]]) == 0)
+          (ps = (modeb == 1 ? a[ps + 2] : a[a[ps + 2]]))
+        else
+          ps += 3
+        end
       when 7
-        a[a[ps + 3]] = (modec == 1 ? a[ps + 1] : a[a[ps + 1]]) < (modeb == 1 ? a[ps + 2] : a[a[ps + 2]]) ? 1 : 0
+        a[a[ps + 3]] =
+          if (modec == 1 ? a[ps + 1] : a[a[ps + 1]]) <
+               (modeb == 1 ? a[ps + 2] : a[a[ps + 2]])
+            1
+          else
+            0
+          end
         ps += 4
       when 8
-        a[a[ps + 3]] = (modec == 1 ? a[ps + 1] : a[a[ps + 1]]) == (modeb == 1 ? a[ps + 2] : a[a[ps + 2]]) ? 1 : 0
+        a[a[ps + 3]] =
+          if (modec == 1 ? a[ps + 1] : a[a[ps + 1]]) ==
+               (modeb == 1 ? a[ps + 2] : a[a[ps + 2]])
+            1
+          else
+            0
+          end
         ps += 4
       when 99
         software[2] = true

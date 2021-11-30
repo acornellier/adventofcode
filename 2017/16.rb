@@ -3,10 +3,10 @@ lines = $stdin.read.strip.split("\n")
 moves = lines[0].split(',')
 
 # g = ('a'..'e').to_a
-g = ('a'..'p').to_a
-og = g.dup
+ship = ('a'..'p').to_a
+og = ship.dup
 
-positions = [g.dup]
+positions = [ship.dup]
 
 n = 0
 loop do
@@ -14,30 +14,30 @@ loop do
     case move[0]
     when 's'
       size = move[1..].to_i
-      g.rotate!(-size)
+      ship.rotate!(-size)
     when 'x'
-      m = move.match(/x(\d+)\/(\d+)/)
+      m = move.match(%r{x(\d+)\/(\d+)})
       a = m[1].to_i
       b = m[2].to_i
-      temp = g[a]
-      g[a] = g[b]
-      g[b] = temp
+      temp = ship[a]
+      ship[a] = ship[b]
+      ship[b] = temp
     when 'p'
       p = move[1]
       q = move[3]
-      a = g.index(p)
-      b = g.index(q)
-      temp = g[a]
-      g[a] = g[b]
-      g[b] = temp
+      a = ship.index(p)
+      b = ship.index(q)
+      temp = ship[a]
+      ship[a] = ship[b]
+      ship[b] = temp
     end
   end
 
-  positions << g.dup
+  positions << ship.dup
   n += 1
-  break if g == og
+  break if ship == og
 end
 
 puts positions.map(&:join)
-puts 1000000000%n
+puts 1_000_000_000 % n
 p positions[34].join

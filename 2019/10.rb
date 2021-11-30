@@ -13,7 +13,7 @@ h = {}
       (0...lines.size).each do |x2|
         next if y2 == y && x2 == x
         next unless grid[y2][x2] == '#'
-        
+
         slope = x == x2 ? Float::INFINITY : (y - y2).to_f / (x - x2)
         y3 = y
         x3 = x
@@ -39,8 +39,8 @@ h = {}
         visible += 1 unless bad
       end
     end
-    
-    h[[y,x]] = visible
+
+    h[[y, x]] = visible
   end
 end
 
@@ -88,20 +88,28 @@ loop do
   end
 
   raise '?' if in_sight.empty?
-  
-  halves = in_sight.partition do |y2, x2|
-    x2 > x || x2 == x && y2 < y
-  end.each do |half|
-    half.sort_by! do |y2, x2|
-      x == x2 ? -Float::INFINITY : (y - y2).to_f / (x - x2)
-    end
-  end
+
+  halves =
+    in_sight
+      .partition { |y2, x2| x2 > x || x2 == x && y2 < y }
+      .each do |half|
+        half.sort_by! do |y2, x2|
+          x == x2 ? -Float::INFINITY : (y - y2).to_f / (x - x2)
+        end
+      end
 
   p in_sight
   p halves.flatten(1)
-  halves.flatten(1).each do |y2, x2|
-    grid[y2][x2] = '.'
-    hit += 1
-    (p x2 * 100 + y2; exit) if hit == 200
-  end
+  halves
+    .flatten(1)
+    .each do |y2, x2|
+      grid[y2][x2] = '.'
+      hit += 1
+      if hit == 200
+        (
+          p x2 * 100 + y2
+          exit
+        )
+      end
+    end
 end

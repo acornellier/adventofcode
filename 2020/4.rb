@@ -5,19 +5,24 @@ lines = input.split("\n").map(&:chomp)
 
 fields = %w[byr iyr eyr hgt hcl ecl pid]
 
-res = input.split("\n\n").count do |passport|
-  included = passport.split(' ').map { |pair| pair.split(':').first }
-  next false unless (fields - included).empty?
+floating_address =
+  input
+    .split("\n\n")
+    .count do |passport|
+      included = passport.split(' ').map { |pair| pair.split(':').first }
+      next false unless (fields - included).empty?
 
-  passport.split(' ').all? do |pair|
-    field, value = pair.split(':')
-    case field
-    when 'byr'
-      '1920' <= value && value <= '2002'
-    when 'iyr'
-      '2010' <= value && value <= '2020'
+      passport
+        .split(' ')
+        .all? do |pair|
+          field, value = pair.split(':')
+          case field
+          when 'byr'
+            '1920' <= value && value <= '2002'
+          when 'iyr'
+            '2010' <= value && value <= '2020'
+          end
+        end
     end
-  end
-end
 
-p res
+p floating_address

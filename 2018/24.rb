@@ -36,54 +36,75 @@ def damage(a, b)
 end
 
 a = true
-og = lines[1..-1].map.with_index do |l, id|
-  (a = false; next) if l.include? 'Infection'
-  side = a ? ?a : ?b
-  size, hp, ad, it = l.scan(/\d+/).map(&:to_i)
-  at = l.scan(/(\w+) damage/).first.first
-  wk = []
-  im = []
-  stuff = l.scan(/\((.*)\)/).first
-  if stuff
-    stuff.first.split('; ').each do |s|
-      types = s.scan(/.* to (.*)/).first.first.split(', ')
-      s.include?('weak to') ? wk += types : im += types
+og =
+  lines[1..-1]
+    .map
+    .with_index do |l, id|
+      (
+        a = false
+        next
+      ) if l.include? 'Infection'
+      side = a ? 'a' : 'b'
+      size, hp, ad, it = l.scan(/\d+/).map(&:to_i)
+      at = l.scan(/(\w+) damage/).first.first
+      wk = []
+      im = []
+      stuff = l.scan(/\((.*)\)/).first
+      if stuff
+        stuff
+          .first
+          .split('; ')
+          .each do |s|
+            types = s.scan(/.* to (.*)/).first.first.split(', ')
+            s.include?('weak to') ? wk += types : im += types
+          end
+      end
+      Group.new(id, side, size, hp, ad, at, it, wk, im)
     end
-  end
-  Group.new(id, side, size, hp, ad, at, it, wk ,im)
-end.compact
+    .compact
 
 0.upto(Float::INFINITY) do |boost|
   p boost
-  groups = og.map { |g| g.dup }
-  groups.each { |g| g.ad = g.ad + boost if g.side == ?a }
+  groups = og.map { |ship| ship.dup }
+  groups.each { |ship| ship.ad = ship.ad + boost if ship.side == 'a' }
 
-  until [?a, ?b].any? { |side| groups.all? { |u| u.side == side } }
+  until %w[a b].any? { |side| groups.all? { |u| u.side == side } }
     targets = {}
-    groups.sort_by { |g| [g.ef, g.it] }.reverse.each do |g|
-      best = [nil, 0]
-      groups.each do |f|
-        next if g.side == f.side
-        dmg = damage(g, f)
-        b = best[0]
-        if dmg > best[1] || b && ((dmg == best[1] && f.ef > b.ef) || (dmg == best[1] && f.ef == b.ef && f.it > b.it))
-          best = [f, dmg] unless targets.values.map(&:id).include?(f.id)
+    groups
+      .sort_by { |ship| [ship.ef, ship.it] }
+      .reverse
+      .each do |ship|
+        best = [nil, 0]
+        groups.each do |f|
+          next if ship.side == f.side
+          dmg = damage(ship, f)
+          b = best[0]
+          if dmg > best[1] ||
+               b &&
+                 (
+                   (dmg == best[1] && f.ef > b.ef) ||
+                     (dmg == best[1] && f.ef == b.ef && f.it > b.it)
+                 )
+            best = [f, dmg] unless targets.values.map(&:id).include?(f.id)
+          end
         end
+        targets[ship.id] = best[0] if best[0]
       end
-      targets[g.id] = best[0] if best[0]
-    end
 
     break if targets.empty?
-    groups.sort_by(&:it).reverse.each do |g|
-      t = targets[g.id]
-      next unless t && g.alive? && t.alive?
-      t.attack(damage(g, t))
-    end
+    groups
+      .sort_by(&:it)
+      .reverse
+      .each do |ship|
+        t = targets[ship.id]
+        next unless t && ship.alive? && t.alive?
+        t.attack(damage(ship, t))
+      end
 
     groups.select!(&:alive?)
   end
 
-  if groups.all? { |u| u.side == ?a }
+  if groups.all? { |u| u.side == 'a' }
     p groups.sum(&:size)
     exit
   end

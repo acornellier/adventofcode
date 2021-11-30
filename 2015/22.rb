@@ -5,9 +5,24 @@ lines = $stdin.read.chomp.split("\n")
 'poison, drain, recharge, poison, shield, recharge, poison, drain, magic_missile'
 
 class Game
-  attr_reader :hp, :mana, :boss, :shield_timer, :poison_timer, :recharge_timer, :spent_mana
-  
-  def initialize(hp, mana, boss, shield_timer, poison_timer, recharge_timer, spent_mana, spells = [])
+  attr_reader :hp,
+              :mana,
+              :boss,
+              :shield_timer,
+              :poison_timer,
+              :recharge_timer,
+              :spent_mana
+
+  def initialize(
+    hp,
+    mana,
+    boss,
+    shield_timer,
+    poison_timer,
+    recharge_timer,
+    spent_mana,
+    spells = []
+  )
     @hp = hp
     @mana = mana
     @boss = boss
@@ -19,13 +34,13 @@ class Game
   end
 
   def won?
-    @boss <= 0 
+    @boss <= 0
   end
-  
+
   def lost?
-    @mana <= 0 || @hp <= 0 
+    @mana <= 0 || @hp <= 0
   end
-  
+
   def play(spell)
     # @hp -= 1
     # return if lost?
@@ -38,27 +53,53 @@ class Game
     return if won?
     @hp -= @shield_timer >= 1 ? 1 : 8
   end
-  
+
   def dup
-    Game.new(@hp, @mana, @boss, @shield_timer, @poison_timer, @recharge_timer, @spent_mana, @spells.dup)
+    Game.new(
+      @hp,
+      @mana,
+      @boss,
+      @shield_timer,
+      @poison_timer,
+      @recharge_timer,
+      @spent_mana,
+      @spells.dup,
+    )
   end
 
   def draw
     puts "- Player #{@hp} HP, #{@mana} mana. Boss #{@boss} HP. Spent #{@spent_mana}."
-    active_effects = [@shield_timer >= 1 ? 'shield' : nil, @poison_timer >= 1 ? 'poison' : nil, @recharge_timer >= 1 ? 'recharge' : nil].compact
-    puts "- Active effects: #{active_effects.join(', ')}" unless active_effects.empty?
+    active_effects = [
+      @shield_timer >= 1 ? 'shield' : nil,
+      @poison_timer >= 1 ? 'poison' : nil,
+      @recharge_timer >= 1 ? 'recharge' : nil,
+    ].compact
+    unless active_effects.empty?
+      puts "- Active effects: #{active_effects.join(', ')}"
+    end
     puts "- Spells cast: #{@spells.join(', ')}"
     puts
   end
-  
+
   def eql?(other)
-    @hp == other.hp && @mana == other.mana && @boss == other.boss && @shield_timer == other.shield_timer && @poison_timer == other.poison_timer && @recharge_timer == other.recharge_timer && @spent_mana == other.spent_mana
+    @hp == other.hp && @mana == other.mana && @boss == other.boss &&
+      @shield_timer == other.shield_timer &&
+      @poison_timer == other.poison_timer &&
+      @recharge_timer == other.recharge_timer && @spent_mana == other.spent_mana
   end
-  
+
   def hash
-    [@hp, @mana, @boss, @shield_timer, @poison_timer, @recharge_timer, @spent_mana].hash
+    [
+      @hp,
+      @mana,
+      @boss,
+      @shield_timer,
+      @poison_timer,
+      @recharge_timer,
+      @spent_mana,
+    ].hash
   end
-  
+
   private
 
   def magic_missile
@@ -94,7 +135,7 @@ class Game
 
   def apply_effects
     @shield_timer -= 1 if @shield_timer >= 1
-      
+
     if @poison_timer >= 1
       @poison_timer -= 1
       @boss -= 3
@@ -111,8 +152,8 @@ exit_condition = ->(game) { game.won? }
 distance = ->(game) { game.spent_mana }
 
 neighbors = ->(game) do
-  [:magic_missile, :drain, :shield, :poison, :recharge].map do |spell|
-    game.dup.tap { |g| g.play(spell) }
+  %i[magic_missile drain shield poison recharge].map do |spell|
+    game.dup.tap { |ship| ship.play(spell) }
   end.reject(&:lost?)
 end
 
