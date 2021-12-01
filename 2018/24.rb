@@ -3,8 +3,8 @@ lines = File.readlines('../input.txt').map(&:strip)
 
 class Group
   attr_accessor :id, :side, :size, :hp, :ad, :at, :it, :wk, :im
-  def initialize(id, side, size, hp, ad, at, it, wk, im)
-    @id = id
+  def initialize(tile_id, side, size, hp, ad, at, it, wk, im)
+    @id = tile_id
     @side = side
     @size = size
     @hp = hp
@@ -39,7 +39,7 @@ a = true
 og =
   lines[1..-1]
     .map
-    .with_index do |l, id|
+    .with_index do |l, tile_id|
       (
         a = false
         next
@@ -59,7 +59,7 @@ og =
             s.include?('weak to') ? wk += types : im += types
           end
       end
-      Group.new(id, side, size, hp, ad, at, it, wk, im)
+      Group.new(tile_id, side, size, hp, ad, at, it, wk, im)
     end
     .compact
 

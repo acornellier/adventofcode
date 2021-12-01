@@ -1,28 +1,61 @@
 require_relative 'util'
 
-input = File.read(ARGV[0])
-lines = input.split("\n").map(&:chomp)
+input = File.read('4.input')
 
-fields = %w[byr iyr eyr hgt hcl ecl pid]
-
-floating_address =
-  input
-    .split("\n\n")
-    .count do |passport|
-      included = passport.split(' ').map { |pair| pair.split(':').first }
-      next false unless (fields - included).empty?
-
-      passport
-        .split(' ')
-        .all? do |pair|
-          field, value = pair.split(':')
-          case field
-          when 'byr'
-            '1920' <= value && value <= '2002'
-          when 'iyr'
-            '2010' <= value && value <= '2020'
-          end
-        end
+# 'cid' field is not required !
+required_validation = {
+  'byr' => ->(year) { (1920..2002).include?(year.to_i) },
+  'iyr' => ->(year) { (2010..2020).include?(year.to_i) },
+  'eyr' => ->(year) { (2020..2030).include?(year.to_i) },
+  'hgt' => ->(height) do
+    case height
+    when /cm/
+      height_number = height.gsub('cm', '').to_i
+      (150..193).include?(height_number)
+    when /in/
+      height_number = height.gsub('in', '').to_i
+      (59..76).include?(height_number)
     end
+  end,
+  'hcl' => ->(hair_color) { hair_color.match?(/#([0-9a-f]){6}$/) },
+  'ecl' => ->(eye_color) do
+    %w[amb blu brn gry grn hzl oth].include?(eye_color)
+  end,
+  'pid' => ->(pid) { pid.match?(/^[0-9]{9}$/) },
+}
+required_fields = required_validation.keys
+arr_input = input.split("\n\n")
 
-p floating_address
+# Part 1
+valid_passports_count =
+  arr_input.count do |entry|
+    fields = entry.gsub(/\n/, ' ').split
+    hashed = Hash[fields.map { |field| field.split(':') }]
+
+    required_fields.all? do |required_field|
+      hashed.keys.include?(required_field)
+    end
+  end
+
+puts "Part 1: there is #{valid_passports_count} valid passports"
+
+# Part 2
+p2_valid_passports_count =
+  arr_input.count do |entry|
+    fields = entry.gsub(/\n/, ' ').split
+    hashed = Hash[fields.map { |field| field.split(':') }]
+
+    all_required_fields_present =
+      required_fields.all? do |required_field|
+        hashed.keys.include?(required_field)
+      end
+
+    all_validations_pass =
+      required_validation.all? do |key, validation|
+        validation.call(hashed[key]) if hashed[key]
+      end
+
+    all_required_fields_present && all_validations_pass
+  end
+
+puts "Part 2: there is #{p2_valid_passports_count} valid passports"
