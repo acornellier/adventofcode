@@ -1,6 +1,6 @@
 COOKIE_FILE = 'cookie'
 
-YEAR = 2020
+YEAR = 2021
 
 @example_extension = nil
 
