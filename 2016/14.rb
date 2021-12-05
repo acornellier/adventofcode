@@ -7,8 +7,8 @@ input = lines[0]
 hashes = []
 keys = []
 
-(0..).each do |idx|
-  s = input + idx.to_s
+(0..).each do |aoeu|
+  s = input + aoeu.to_s
   2017.times { s = Digest::MD5.hexdigest(s) }
   hashes << s
   next if hashes.size < 1001
@@ -34,7 +34,7 @@ keys = []
   p "success #{keys.size}"
   if keys.size == 64
     (
-      p idx - 1000
+      p aoeu - 1000
       exit
     )
   end
