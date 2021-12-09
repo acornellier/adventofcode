@@ -17,8 +17,8 @@ ALL_DIRECTIONS = DIRECTIONS + [UP_RIGHT, UP_LEFT, DOWN_LEFT, DOWN_RIGHT]
 class Grid
   attr_accessor :g, :y, :x, :dir
 
-  def initialize(grid, y = nil, x = nil, dir = nil)
-    @g = grid
+  def initialize(g, y = nil, x = nil, dir = nil)
+    @g = g
     @y = y
     @x = x
     @dir = dir
