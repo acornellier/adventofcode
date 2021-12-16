@@ -32,6 +32,10 @@ class Grid
     @g[y]
   end
 
+  def at(y, x)
+    @g[y][x]
+  end
+
   def cur
     @g[y][x]
   end
@@ -71,7 +75,15 @@ class Grid
   end
 
   def map_neighbors
-    DIRECTIONS.map { |dir| temp_move(dir) { yield } }.compact
+    DIRECTIONS.filter_map { |dir| temp_move(dir) { yield } }
+  end
+
+  def bounded_neighbors
+    map_neighbors { out_of_bounds? ? nil : coords }
+  end
+
+  def bounded_neighbor_coords
+    map_neighbors { out_of_bounds? ? nil : coords }
   end
 
   def out_of_bounds?
@@ -134,37 +146,51 @@ class Grid
   end
 end
 
+def reconstruct_path(came_from, state)
+  path = [state]
+  path.unshift(came_from[path[0]]) while came_from.include?(path[0])
+  path
+end
+
 def dijkstra(
   initial_state,
-  exit_condition,
-  neighbors,
-  distance = ->(_, d) { d + 1 }
+  exit_condition, # -> (state) { false }
+  neighbors, # -> (state) { [] }
+  distance = ->(state, neighbor) { 1 },
+  estimate_remaining = ->(neighbor) { 0 }
 )
-  states = Hash.new(Float::INFINITY)
-  states[initial_state] = distance.call(initial_state, -1)
-  visited = Set.new
+  came_from = {}
 
-  loop do
-    raise 'no possible moves' if states.empty?
+  scores_actual = Hash.new(Float::INFINITY)
+  scores_actual[initial_state] = 0
 
-    shortest_distance = states.values.min
-    cur = states.key(shortest_distance)
-    states.delete(cur)
-    visited.add(cur)
+  scores_estimate = Hash.new(Float::INFINITY)
+  scores_estimate[initial_state] = 0
+
+  until scores_estimate.empty?
+    shortest_distance = scores_estimate.values.min
+    cur = scores_estimate.key(shortest_distance)
 
     if exit_condition.call(cur)
+      # path = reconstruct_path(came_from, cur)
+      # p path
       puts shortest_distance
       return
     end
 
+    scores_estimate.delete(cur)
+
     neighbors
       .call(cur)
       .each do |neighbor|
-        next if visited.include?(neighbor)
-        states[neighbor] = [
-          states[neighbor] || Float::INFINITY,
-          distance.call(neighbor, shortest_distance),
-        ].min
+        score = scores_actual[cur] + distance.call(cur, neighbor)
+        next unless score < (scores_actual[neighbor] || Float::INFINITY)
+
+        came_from[neighbor] = cur
+        scores_actual[neighbor] = score
+        scores_estimate[neighbor] = score + estimate_remaining.call(neighbor)
       end
   end
+
+  raise 'no possible moves'
 end

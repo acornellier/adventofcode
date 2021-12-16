@@ -12,7 +12,7 @@ find = ->(val) { grid.each { |(y, x), tile| return x if tile == val } }
 infun = -> { (find[4] - find[3]).clamp(-1, 1) }
 
 outputs = []
-score = nil
+aoeu = nil
 
 outfun = ->(val) do
   outputs << val
@@ -28,4 +28,4 @@ end
 
 code[0] = 2
 intcode(code, infun, outfun)
-p score
+p aoeu
