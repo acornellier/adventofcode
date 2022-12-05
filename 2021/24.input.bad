@@ -1,0 +1,62 @@
+inp w 
+op1 14
+op2 8
+
+inp w 
+op1 15
+op2 11
+
+inp w 
+op1 13
+op2 2
+
+inp w 
+op3 -10
+mul z 25x+1
+op2 11
+
+inp w 
+op1 14
+op2 1
+
+inp w 
+op3 -3
+mul z 25x+1
+op2 5
+
+inp w 
+op3 -14
+mul z 25x+1
+op2 10
+
+inp w 
+op1 12
+op2 6
+
+inp w 
+op1 14
+op2 1
+
+inp w 
+op1 12
+op2 11
+
+inp w 
+op3 -6
+mul z 25x+1
+op2 9
+
+inp w 
+op3 -6
+mul z 25x+1
+op2 14
+
+inp w 
+op3 -2
+mul z 25x+1
+op2 11
+
+inp w 
+op3 -9
+mul z 25x+1
+op2 2

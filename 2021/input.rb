@@ -28,7 +28,7 @@ def get_input_str_arr(original_filename)
       true_input = strip_newlines(File.readlines("#{dot_slash_date}.input"))
     end
 
-    if !true_input
+    unless true_input
       puts "Fetching input for day #{day}..."
 
       # Call .to_i.to_s to get rid of leading 0 for Dec. 1-9.
@@ -36,8 +36,8 @@ def get_input_str_arr(original_filename)
 
       curl_command =
         "curl https://adventofcode.com/#{YEAR}/day/#{day}/input " \
-          "-H 'cache-control: max-age=0' " \
-          "-H 'cookie: #{cookie}' " \
+          "-H \"cache-control: max-age=0\" " \
+          "-H \"cookie: #{cookie}\" " \
           "--output #{true_input_filename} "
 
       system(curl_command)

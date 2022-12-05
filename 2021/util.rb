@@ -1,4 +1,5 @@
 require 'set'
+require 'pqueue'
 
 UP = 0
 RIGHT = 1
@@ -154,8 +155,8 @@ end
 
 def dijkstra(
   initial_state,
-  exit_condition, # -> (state) { false }
-  neighbors, # -> (state) { [] }
+  exit_condition, # ->(state) { false }
+  neighbors, # ->(state) { [neighbor] }
   distance = ->(state, neighbor) { 1 },
   estimate_remaining = ->(neighbor) { 0 }
 )
@@ -167,14 +168,17 @@ def dijkstra(
   scores_estimate = Hash.new(Float::INFINITY)
   scores_estimate[initial_state] = 0
 
+  pq = PQueue.new { scores_estimate[_1] < scores_estimate[_2] }
+  pq.push(initial_state)
+
   until scores_estimate.empty?
-    shortest_distance = scores_estimate.values.min
-    cur = scores_estimate.key(shortest_distance)
+    cur = pq.pop
 
     if exit_condition.call(cur)
+      p "solved!"
       # path = reconstruct_path(came_from, cur)
-      # p path
-      puts shortest_distance
+      # puts path
+      puts scores_estimate[cur]
       return
     end
 
@@ -183,13 +187,14 @@ def dijkstra(
     neighbors
       .call(cur)
       .each do |neighbor|
-        score = scores_actual[cur] + distance.call(cur, neighbor)
-        next unless score < (scores_actual[neighbor] || Float::INFINITY)
+      score = scores_actual[cur] + distance.call(cur, neighbor)
+      next unless score < scores_actual[neighbor]
 
-        came_from[neighbor] = cur
-        scores_actual[neighbor] = score
-        scores_estimate[neighbor] = score + estimate_remaining.call(neighbor)
-      end
+      came_from[neighbor] = cur
+      scores_actual[neighbor] = score
+      scores_estimate[neighbor] = score + estimate_remaining.call(neighbor)
+      pq.push(neighbor)
+    end
   end
 
   raise 'no possible moves'
