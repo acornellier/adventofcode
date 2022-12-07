@@ -1,21 +1,20 @@
 require_relative 'util'
 require_relative 'input'
 
-groups = str_groups_separated_by_blank_lines(__FILE__)
+a, b = str_groups_separated_by_blank_lines(__FILE__)
 
-stack_count = groups[0].last.split.map(&:to_i).max
-stacks = []
-groups[0].reverse[1..].each do |line|
-  (0...stack_count).each do |stack_idx|
-    stacks[stack_idx] ||= []
-    char = line[1 + stack_idx * 4].strip
-    stacks[stack_idx] << char unless char.empty?
+stack_count = a.last.split.map(&:to_i).max
+stacks = (0...stack_count).map do |stack_idx|
+  a.reverse[1..].filter_map do |line|
+    char = line[1 + stack_idx * 4]
+    char unless char == ' '
   end
 end
 
-groups[1].each do |instruction|
-  match = instruction.match(/move (\d+) from (\d+) to (\d+)/)
-  a, b, c = match[1..].map(&:to_i)
+stacks = a.map(&:chars)[..-2].transpose
+
+b.each do
+  a, b, c = _1.scan(/\d+/).map(&:to_i)
 
   stacks[c - 1] += stacks[b - 1][-a..-1]
   a.times do
