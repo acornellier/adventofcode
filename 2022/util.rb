@@ -75,16 +75,12 @@ class Grid
     @dir = (@dir + 2) % 4
   end
 
-  def map_neighbors
-    DIRECTIONS.filter_map { |dir| temp_move(dir) { yield } }
-  end
-
   def bounded_neighbors
-    map_neighbors { out_of_bounds? ? nil : coords }
-  end
-
-  def bounded_neighbor_coords
-    map_neighbors { out_of_bounds? ? nil : coords }
+    DIRECTIONS.filter_map do |dir|
+      temp_move(dir) do
+        out_of_bounds? ? nil : coords
+      end
+    end
   end
 
   def out_of_bounds?
@@ -175,11 +171,11 @@ def dijkstra(
     cur = pq.pop
 
     if exit_condition.call(cur)
-      p "solved!"
+      # p "solved!"
+      # puts scores_estimate[cur]
       # path = reconstruct_path(came_from, cur)
-      # puts path
-      puts scores_estimate[cur]
-      return
+      # p path
+      return scores_estimate[cur]
     end
 
     scores_estimate.delete(cur)
