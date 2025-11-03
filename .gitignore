@@ -4,3 +4,4 @@ ejemplo.txt
 input.txt
 foo.cr
 node_modules
+.DS_Store
