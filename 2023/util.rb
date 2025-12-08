@@ -15,6 +15,37 @@ REVERSE = ->(dir) { (dir + 2) % 4 + (dir >= 4 ? 4 : 0) }
 DIRECTIONS = [UP, RIGHT, DOWN, LEFT]
 ALL_DIRECTIONS = DIRECTIONS + [UP_RIGHT, UP_LEFT, DOWN_LEFT, DOWN_RIGHT]
 
+def move_from(y, x, dir, dist = 1)
+  case dir
+  when UP
+    [y - dist, x]
+  when RIGHT
+    [y, x + dist]
+  when DOWN
+    [y + dist, x]
+  when LEFT
+    [y, x - dist]
+  when UP_RIGHT
+    [y - dist, x + dist]
+  when UP_LEFT
+    [y - dist, x - dist]
+  when DOWN_LEFT
+    [y + dist, x - dist]
+  when DOWN_RIGHT
+    [y + dist, x + dist]
+  else
+    raise "invalid dir: #{dir}"
+  end
+end
+
+def left_dir(dir)
+  (dir - 1) % 4
+end
+
+def right_dir(dir)
+  (dir + 1) % 4
+end
+
 class Grid
   attr_accessor :g, :y, :x, :dir
 
@@ -70,11 +101,11 @@ class Grid
   end
 
   def turn_left
-    @dir = (@dir - 1) % 4
+    @dir = left_dir(@dir)
   end
 
   def turn_right
-    @dir = (@dir + 1) % 4
+    @dir = right_dir(@dir)
   end
 
   def turn_around
@@ -103,24 +134,7 @@ class Grid
   end
 
   def dir_coords(dir = @dir)
-    case dir
-    when UP
-      [@y - 1, @x]
-    when RIGHT
-      [@y, @x + 1]
-    when DOWN
-      [@y + 1, @x]
-    when LEFT
-      [@y, @x - 1]
-    when UP_RIGHT
-      [@y - 1, @x + 1]
-    when UP_LEFT
-      [@y - 1, @x - 1]
-    when DOWN_LEFT
-      [@y + 1, @x - 1]
-    when DOWN_RIGHT
-      [@y + 1, @x + 1]
-    end
+    move_from(@y, @x, dir)
   end
 
   def neighbor(dir = @dir)
@@ -129,28 +143,7 @@ class Grid
   end
 
   def move(dir = @dir)
-    case dir
-    when UP
-      @y -= 1
-    when RIGHT
-      @x += 1
-    when DOWN
-      @y += 1
-    when LEFT
-      @x -= 1
-    when UP_RIGHT
-      @y -= 1
-      @x += 1
-    when UP_LEFT
-      @y -= 1
-      @x -= 1
-    when DOWN_LEFT
-      @y += 1
-      @x -= 1
-    when DOWN_RIGHT
-      @y += 1
-      @x += 1
-    end
+    @y, @x = move_from(@y, @x, dir)
   end
 end
 
