@@ -159,18 +159,19 @@ class Grid
   end
 end
 
-def reconstruct_path(came_from, state)
+def print_reconstructed_path(came_from, state, score)
+  p "solved!"
+  puts score
   path = [state]
   path.unshift(came_from[path[0]]) while came_from.include?(path[0])
-  path
+  p path
 end
 
 def dijkstra(
   initial_state,
   exit_condition, # ->(state) { false }
   neighbors, # ->(state) { [neighbor] }
-  distance = ->(state, neighbor) { 1 },
-  estimate_remaining = ->(neighbor) { 0 }
+  estimate_remaining: ->(neighbor) { 0 }
 )
   came_from = {}
 
@@ -187,19 +188,15 @@ def dijkstra(
     cur = pq.pop
 
     if exit_condition.call(cur)
-      # p "solved!"
-      # puts scores_estimate[cur]
-      # path = reconstruct_path(came_from, cur)
-      # p path
+      # print_reconstructed_path(came_from, cur, scores_estimate[cur])
       return scores_estimate[cur]
     end
 
     scores_estimate.delete(cur)
 
-    neighbors
-      .call(cur)
-      .each do |neighbor|
-      score = scores_actual[cur] + distance.call(cur, neighbor)
+    new_neighbors = neighbors.call(cur)
+    new_neighbors.each do |neighbor, dist|
+      score = scores_actual[cur] + dist || 1
       next unless score < scores_actual[neighbor]
 
       came_from[neighbor] = cur
